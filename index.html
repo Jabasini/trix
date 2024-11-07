@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tricks Game Score Registration</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #121212; 
+            color: #ffffff; 
+            text-align: left; 
+            direction: ltr;
+        }
+        form { 
+            margin-top: 20px; 
+            background-color: #333; 
+            padding: 20px; 
+            border-radius: 8px;
+        }
+        input, select, textarea, button { 
+            margin: 5px 0; 
+            padding: 10px; 
+            width: 100%; 
+            background-color: #555; 
+            color: #fff; 
+            border: none; 
+            border-radius: 4px;
+        }
+        button { 
+            background-color: #1a73e8; 
+            cursor: pointer;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            color: #fff;
+        }
+        th, td { 
+            border: 1px solid #444; 
+            padding: 8px; 
+            text-align: center; 
+        }
+        img { 
+            display: block; 
+            margin: 20px auto; 
+            width: 300px; 
+        }
+        #analysis { 
+            font-size: 18px; 
+            margin-top: 20px; 
+        }
+        .highlight { 
+            font-weight: bold; 
+            font-size: 24px; 
+            color: #ff5722; 
+            text-align: center; 
+            margin-top: 10px; 
+        }
+        #content-container { 
+            display: flex; 
+            flex-direction: row-reverse; 
+            gap: 20px; 
+            align-items: flex-start; 
+        }
+    </style>
+</head>
+<body>
+
+<h2>Tricks Game Final Score Registration</h2>
+
+<div class="highlight" id="leadingTeam"></div>
+
+<div id="content-container">
+    <!-- Displaying Card Image -->
+    <img src="cards.jpg" alt="Playing Cards">
+
+    <!-- Results Analysis Section -->
+    <div id="analysis">
+        <h3>Results Analysis</h3>
+        <p>Total Score of Abo Amin: <span id="totalAboAmin">0</span></p>
+        <p>Total Score of Abo Toufic: <span id="totalAboToufic">0</span></p>
+        <p>Monthly Analysis:</p>
+        <ul id="monthlyAnalysis"></ul>
+    </div>
+</div>
+
+<form id="recordForm">
+    <label for="date">Date:</label>
+    <input type="date" id="date" readonly required>
+    
+    <label for="name">Player's Name:</label>
+    <select id="name" required>
+        <option value="">Select a Player</option>
+        <option value="Abo Amin">Abo Amin</option>
+        <option value="Abo Marwan">Abo Marwan</option>
+        <option value="Abo Karam">Abo Karam</option>
+        <option value="Abo Toufic">Abo Toufic</option>
+    </select>
+    
+    <label>Game Score:</label>
+    <div style="display: flex; gap: 10px;">
+        <input type="number" id="scoreAboAmin" placeholder="Abo Amin's Score" required>
+        <input type="number" id="scoreAboToufic" placeholder="Abo Toufic's Score" required>
+    </div>
+    
+    <label for="notes">Notes:</label>
+    <textarea id="notes" placeholder="Additional notes..."></textarea>
+    
+    <button type="button" onclick="addRecord()">Add Score</button>
+</form>
+
+<table id="recordsTable">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Player's Name</th>
+            <th>Abo Amin's Score</th>
+            <th>Abo Toufic's Score</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    // Auto-set current date on page load
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("date").value = today;
+    };
+
+    // Object to store player scores
+    const playerScores = {
+        "Abo Amin": [],
+        "Abo Marwan": [],
+        "Abo Karam": [],
+        "Abo Toufic": []
+    };
+
+    let totalAboAmin = 0;
+    let totalAboToufic = 0;
+
+    function addRecord() {
+        const date = document.getElementById("date").value;
+        const name = document.getElementById("name").value;
+        const scoreAboAmin = parseInt(document.getElementById("scoreAboAmin").value) || 0;
+        const scoreAboToufic = parseInt(document.getElementById("scoreAboToufic").value) || 0;
+        const notes = document.getElementById("notes").value;
+
+        if (date && name) {
+            // Add record to player's specific data
+            playerScores[name].push({
+                date: date,
+                scoreAboAmin: scoreAboAmin,
+                scoreAboToufic: scoreAboToufic,
+                notes: notes
+            });
+
+            updateTotalScores();
+            displayRecords();
+            document.getElementById("recordForm").reset();
+            document.getElementById("date").value = date;
+        } else {
+            alert("Please fill in all required fields.");
+        }
+    }
+
+    function updateTotalScores() {
+        totalAboAmin = playerScores["Abo Amin"].reduce((sum, record) => sum + record.scoreAboAmin, 0);
+        totalAboToufic = playerScores["Abo Toufic"].reduce((sum, record) => sum + record.scoreAboToufic, 0);
+
+        document.getElementById("totalAboAmin").innerText = totalAboAmin;
+        document.getElementById("totalAboToufic").innerText = totalAboToufic;
+    }
+
+    function displayRecords() {
+        const tableBody = document.getElementById("recordsTable").getElementsByTagName("tbody")[0];
+        tableBody.innerHTML = ""; // Clear previous records
+
+        // Display records for all players
+        for (const player in playerScores) {
+            playerScores[player].forEach(record => {
+                const newRow = tableBody.insertRow();
+                newRow.insertCell(0).innerText = record.date;
+                newRow.insertCell(1).innerText = player;
+                newRow.insertCell(2).innerText = record.scoreAboAmin;
+                newRow.insertCell(3).innerText = record.scoreAboToufic;
+                newRow.insertCell(4).innerText = record.notes;
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
